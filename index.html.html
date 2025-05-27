@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MNYT CALCULATOR</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-theme {
+            background-color: #121212;
+            color: #f5f5f5;
+        }
+
+        .calculator {
+            width: 320px;
+            background-color: #2c3e50;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s;
+        }
+
+        .dark-theme .calculator {
+            background-color: #1e1e1e;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .brand {
+            color: #ecf0f1;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .dark-theme .brand {
+            color: #f5f5f5;
+        }
+
+        .display {
+            background-color: #ecf0f1;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: right;
+            word-wrap: break-word;
+            word-break: break-all;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .dark-theme .display {
+            background-color: #333;
+            color: #f5f5f5;
+        }
+
+        .previous-operand {
+            color: rgba(0, 0, 0, 0.7);
+            font-size: 1.2rem;
+            min-height: 24px;
+            transition: color 0.3s;
+        }
+
+        .dark-theme .previous-operand {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .current-operand {
+            color: #000;
+            font-size: 2.2rem;
+            font-weight: bold;
+            min-height: 36px;
+            transition: color 0.3s;
+        }
+
+        .dark-theme .current-operand {
+            color: #f5f5f5;
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 12px;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 15px 0;
+            font-size: 1.2rem;
+            cursor: pointer;
+            background-color: #34495e;
+            color: white;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 0 #2c3e50;
+        }
+
+        .dark-theme button {
+            background-color: #333;
+            box-shadow: 0 3px 0 #222;
+        }
+
+        button:hover {
+            background-color: #3d566e;
+            transform: translateY(-2px);
+        }
+
+        .dark-theme button:hover {
+            background-color: #444;
+        }
+
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 0 #2c3e50;
+        }
+
+        .dark-theme button:active {
+            box-shadow: 0 1px 0 #222;
+        }
+
+        .operation {
+            background-color: #3498db;
+            box-shadow: 0 3px 0 #2980b9;
+        }
+
+        .dark-theme .operation {
+            background-color: #1e88e5;
+            box-shadow: 0 3px 0 #0d47a1;
+        }
+
+        .operation:hover {
+            background-color: #3ca0e0;
+        }
+
+        .dark-theme .operation:hover {
+            background-color: #2196f3;
+        }
+
+        .span-two {
+            grid-column: span 2;
+            background-color: #e74c3c;
+            box-shadow: 0 3px 0 #c0392b;
+        }
+
+        .dark-theme .span-two {
+            background-color: #f44336;
+            box-shadow: 0 3px 0 #b71c1c;
+        }
+
+        .span-two:hover {
+            background-color: #ec7063;
+        }
+
+        .dark-theme .span-two:hover {
+            background-color: #ef5350;
+        }
+
+        .scientific {
+            background-color: #95a5a6;
+            box-shadow: 0 3px 0 #7f8c8d;
+            font-size: 1rem;
+            padding: 12px 0;
+        }
+
+        .dark-theme .scientific {
+            background-color: #616161;
+            box-shadow: 0 3px 0 #424242;
+        }
+
+        .scientific:hover {
+            background-color: #a6b5b6;
+        }
+
+        .dark-theme .scientific:hover {
+            background-color: #757575;
+        }
+
+        /* Equal button special styling */
+        button.operation[value="="] {
+            background-color: #2ecc71;
+            box-shadow: 0 3px 0 #27ae60;
+        }
+
+        .dark-theme button.operation[value="="] {
+            background-color: #4caf50;
+            box-shadow: 0 3px 0 #2e7d32;
+        }
+
+        button.operation[value="="]:hover {
+            background-color: #3dd47d;
+        }
+
+        .dark-theme button.operation[value="="]:hover {
+            background-color: #66bb6a;
+        }
+
+        /* Clear button special styling */
+        button[value="AC"] {
+            background-color: #f39c12;
+            box-shadow: 0 3px 0 #d35400;
+        }
+
+        .dark-theme button[value="AC"] {
+            background-color: #ff9800;
+            box-shadow: 0 3px 0 #e65100;
+        }
+
+        button[value="AC"]:hover {
+            background-color: #f4a942;
+        }
+
+        .dark-theme button[value="AC"]:hover {
+            background-color: #ffa726;
+        }
+
+        /* Delete button special styling */
+        button[value="DEL"] {
+            background-color: #9b59b6;
+            box-shadow: 0 3px 0 #8e44ad;
+        }
+
+        .dark-theme button[value="DEL"] {
+            background-color: #9c27b0;
+            box-shadow: 0 3px 0 #6a1b9a;
+        }
+
+        button[value="DEL"]:hover {
+            background-color: #a56bbf;
+        }
+
+        .dark-theme button[value="DEL"]:hover {
+            background-color: #ab47bc;
+        }
+
+        /* Theme toggle button */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #2c3e50;
+            transition: color 0.3s;
+        }
+
+        .dark-theme .theme-toggle {
+            color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" aria-label="Toggle theme">🌓</button>
+    <div class="calculator">
+        <div class="brand">MNYT CALCULATOR</div>
+        <div class="display">
+            <div class="previous-operand"></div>
+            <div class="current-operand">0</div>
+        </div>
+        
+        <div class="buttons-grid">
+            <!-- First row -->
+            <button class="span-two" value="AC">AC</button>
+            <button value="DEL">DEL</button>
+            <button class="operation" value="/">÷</button>
+            
+            <!-- Second row -->
+            <button value="7">7</button>
+            <button value="8">8</button>
+            <button value="9">9</button>
+            <button class="operation" value="*">×</button>
+            
+            <!-- Third row -->
+            <button value="4">4</button>
+            <button value="5">5</button>
+            <button value="6">6</button>
+            <button class="operation" value="-">-</button>
+            
+            <!-- Fourth row -->
+            <button value="1">1</button>
+            <button value="2">2</button>
+            <button value="3">3</button>
+            <button class="operation" value="+">+</button>
+            
+            <!-- Fifth row -->
+            <button class="span-two" value="0">0</button>
+            <button value=".">.</button>
+            <button class="operation" value="=">=</button>
+            
+            <!-- Scientific functions row -->
+            <button class="scientific" value="sin(">sin</button>
+            <button class="scientific" value="cos(">cos</button>
+            <button class="scientific" value="tan(">tan</button>
+            <button class="scientific" value="log(">log</button>
+            
+            <!-- More scientific functions -->
+            <button class="scientific" value="√(">√</button>
+            <button class="scientific" value="^2">x²</button>
+            <button class="scientific" value="^">x^y</button>
+            <button class="scientific" value="π">π</button>
+            
+            <!-- Additional functions -->
+            <button class="scientific" value="(">(</button>
+            <button class="scientific" value=")">)</button>
+            <button class="scientific" value="%">%</button>
+            <button class="scientific" value="!">!</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Calculator state
+            let currentOperand = '0';
+            let previousOperand = '';
+            let operation = undefined;
+            let resetScreen = false;
+
+            // DOM elements
+            const currentOperandElement = document.querySelector('.current-operand');
+            const previousOperandElement = document.querySelector('.previous-operand');
+            const buttons = document.querySelectorAll('button');
+            const themeToggle = document.querySelector('.theme-toggle');
+
+            // Theme toggle
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-theme');
+                const isDark = document.body.classList.contains('dark-theme');
+                themeToggle.textContent = isDark ? '🌞' : '🌓';
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            });
+
+            // Initialize theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                themeToggle.textContent = '🌞';
+            }
+
+            // Update display
+            function updateDisplay() {
+                currentOperandElement.textContent = currentOperand;
+                previousOperandElement.textContent = previousOperand;
+            }
+
+            // Append number
+            function appendNumber(number) {
+                if (currentOperand === '0' || resetScreen) {
+                    currentOperand = '';
+                    resetScreen = false;
+                }
+                if (number === '.' && currentOperand.includes('.')) return;
+                currentOperand += number;
+                updateDisplay();
+            }
+
+            // Choose operation
+            function chooseOperation(op) {
+                if (currentOperand === '') return;
+                if (previousOperand !== '') {
+                    compute();
+                }
+                operation = op;
+                previousOperand = `${currentOperand} ${operation}`;
+                currentOperand = '';
+                updateDisplay();
+            }
+
+            // Compute result
+            function compute() {
+                let computation;
+                const prev = parseFloat(previousOperand);
+                const current = parseFloat(currentOperand);
+                
+                if (isNaN(prev) || isNaN(current)) return;
+                
+                try {
+                    switch (operation) {
+                        case '+':
+                            computation = prev + current;
+                            break;
+                        case '-':
+                            computation = prev - current;
+                            break;
+                        case '*':
+                            computation = prev * current;
+                            break;
+                        case '/':
+                            if (current === 0) {
+                                throw new Error("Division by zero");
+                            }
+                            computation = prev / current;
+                            break;
+                        case '%':
+                            computation = prev % current;
+                            break;
+                        case '^':
+                            computation = Math.pow(prev, current);
+                            break;
+                        default:
+                            return;
+                    }
+                    currentOperand = computation.toString();
+                    operation = undefined;
+                    previousOperand = '';
+                    resetScreen = true;
+                } catch (error) {
+                    currentOperand = 'Error';
+                    previousOperand = '';
+                    operation = undefined;
+                }
+                updateDisplay();
+            }
+
+            // Handle scientific functions
+            function handleScientificFunction(func) {
+                let value = parseFloat(currentOperand);
+                if (isNaN(value)) value = 0;
+                
+                try {
+                    switch (func) {
+                        case 'sin(':
+                            currentOperand = Math.sin(value * Math.PI / 180).toString();
+                            break;
+                        case 'cos(':
+                            currentOperand = Math.cos(value * Math.PI / 180).toString();
+                            break;
+                        case 'tan(':
+                            currentOperand = Math.tan(value * Math.PI / 180).toString();
+                            break;
+                        case 'log(':
+                            if (value <= 0) throw new Error("Invalid input");
+                            currentOperand = Math.log10(value).toString();
+                            break;
+                        case '√(':
+                            if (value < 0) throw new Error("Invalid input");
+                            currentOperand = Math.sqrt(value).toString();
+                            break;
+                        case '^2':
+                            currentOperand = Math.pow(value, 2).toString();
+                            break;
+                        case 'π':
+                            currentOperand = Math.PI.toString();
+                            break;
+                        case '!':
+                            if (value < 0 || !Number.isInteger(value)) throw new Error("Invalid input");
+                            currentOperand = factorial(value).toString();
+                            break;
+                        default:
+                            appendNumber(func);
+                            return;
+                    }
+                    resetScreen = true;
+                } catch (error) {
+                    currentOperand = 'Error';
+                }
+                updateDisplay();
+            }
+
+            // Factorial function
+            function factorial(n) {
+                if (n === 0 || n === 1) return 1;
+                let result = 1;
+                for (let i = 2; i <= n; i++) {
+                    result *= i;
+                }
+                return result;
+            }
+
+            // Clear calculator
+            function clear() {
+                currentOperand = '0';
+                previousOperand = '';
+                operation = undefined;
+                updateDisplay();
+            }
+
+            // Delete last character
+            function deleteNumber() {
+                if (currentOperand.length === 1 || (currentOperand.length === 2 && currentOperand.startsWith('-'))) {
+                    currentOperand = '0';
+                } else {
+                    currentOperand = currentOperand.slice(0, -1);
+                }
+                updateDisplay();
+            }
+
+            // Handle button clicks
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const value = button.value;
+                    
+                    if (value >= '0' && value <= '9') {
+                        appendNumber(value);
+                    } else if (value === '.') {
+                        appendNumber(value);
+                    } else if (['+', '-', '*', '/', '%', '^'].includes(value)) {
+                        chooseOperation(value);
+                    } else if (value === '=') {
+                        compute();
+                    } else if (value === 'AC') {
+                        clear();
+                    } else if (value === 'DEL') {
+                        deleteNumber();
+                    } else {
+                        handleScientificFunction(value);
+                    }
+                });
+            });
+
+            // Keyboard support
+            document.addEventListener('keydown', (e) => {
+                if (e.key >= '0' && e.key <= '9') {
+                    appendNumber(e.key);
+                } else if (e.key === '.') {
+                    appendNumber(e.key);
+                } else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+                    chooseOperation(e.key);
+                } else if (e.key === 'Enter' || e.key === '=') {
+                    compute();
+                } else if (e.key === 'Escape') {
+                    clear();
+                } else if (e.key === 'Backspace') {
+                    deleteNumber();
+                } else if (e.key === '%') {
+                    chooseOperation('%');
+                } else if (e.key === '^') {
+                    chooseOperation('^');
+                }
+            });
+
+            // Initialize display
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>
